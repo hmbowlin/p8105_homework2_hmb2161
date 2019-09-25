@@ -2,14 +2,16 @@
 title: "Homework 2"
 output: github_document
 ---
+# Problem 1
 
+* Mr. Trash Wheel Sheet
 ```{r}
-
 #Load tidyverse library
 library(tidyverse)
 
-#import in the Mr. Trash Wheel sheet from mrtrashwheel dataset
-#first row is skipped as it contains company logo, blank celsl are dropped, and the names are cleaned up
+# import in the Mr. Trash Wheel sheet from mrtrashwheel dataset
+# first row is skipped as it contains company logo, blank celsl are dropped, and the names are cleaned up
+# drop any blank cells, select everything but homes_powered and x15, change sports_balls to an integer format
 mrtrashwheel_data = 
   readxl::read_excel(
     "./data_hw2/mrtrashwheel.xlsx", 
@@ -18,11 +20,43 @@ mrtrashwheel_data =
     col_names = TRUE,
     col_types = NULL) %>%
 janitor::clean_names() %>%
+drop_na() %>%
 select(-homes_powered, -x15) %>%
-drop_na()
-
+mutate(sport_balls = as.integer(sports_balls)) %>%
+select(-sports_balls)
 mrtrashwheel_data
 
+```
 
+* Precipitation Sheets
+```{r}
+precipitation_2017 = 
+  readxl::read_excel(
+    "./data_hw2/mrtrashwheel.xlsx", 
+    sheet = 3,
+    range = "A2:B14",
+    col_names = TRUE,
+    col_types = NULL) %>%
+  mutate(year = "2017") %>%
+  janitor::clean_names() %>%
+  drop_na()
+
+precipitation_2017
+
+precipitation_2018 = 
+  readxl::read_excel(
+    "./data_hw2/mrtrashwheel.xlsx", 
+    sheet = 4,
+    range = "A2:B14",
+    col_names = TRUE,
+    col_types = NULL) %>%
+  mutate(year = "2018") %>%
+  janitor::clean_names() %>%
+  drop_na()
+
+precipitation_2018
+
+
+  
 ```
 
