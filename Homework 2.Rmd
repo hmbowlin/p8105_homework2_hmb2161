@@ -63,4 +63,4 @@ precipitation_data =
 
 precipitation_data
 ```
-
+The data in the mrtrashwheel_data set has `r nrow(mrtrashwheel_data)` number of observations. The data describe the contents, weight, and volume of dumpsters during 2015 from April to December. The mean weight of the dumpsters is `r mean(pull(mrtrashwheel_data, weight_tons))` and the median number of sports balls in each dumpster is `r median(pull(mrtrashwheel_data, sport_balls))`. 

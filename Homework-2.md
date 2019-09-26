@@ -165,3 +165,9 @@ precipitation_data
     ## 17 October    0    2018 
     ## 18 November   0.11 2018 
     ## 19 December   0.94 2018
+
+The data in the mrtrashwheel\_data set has 18 number of observations.
+The data describe the contents, weight, and volume of dumpsters during
+2015 from April to December. The mean weight of the dumpsters is
+3.6505556 and the median number of sports balls in each dumpster is
+14.5.
