@@ -12,14 +12,14 @@ Homework 2
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ─────────────────────────────────────────────────── tidyverse 1.2.1 ──
+    ## ── Attaching packages ────────────────────────────────────────────────── tidyverse 1.2.1 ──
 
     ## ✔ ggplot2 3.2.1     ✔ purrr   0.3.2
     ## ✔ tibble  2.1.3     ✔ dplyr   0.8.3
     ## ✔ tidyr   1.0.0     ✔ stringr 1.4.0
     ## ✔ readr   1.3.1     ✔ forcats 0.4.0
 
-    ## ── Conflicts ────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ───────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
 
@@ -133,3 +133,35 @@ precipitation_2018
     ## 10    10  0    2018 
     ## 11    11  0.11 2018 
     ## 12    12  0.94 2018
+
+``` r
+precipitation_data = 
+  bind_rows(precipitation_2017, precipitation_2018) %>%
+  janitor::clean_names() %>%
+  mutate(month = month.name[as.numeric(month)])
+
+precipitation_data
+```
+
+    ## # A tibble: 19 x 3
+    ##    month     total year 
+    ##    <chr>     <dbl> <chr>
+    ##  1 January    0.96 2017 
+    ##  2 February   5.3  2017 
+    ##  3 March      2.18 2017 
+    ##  4 April      3.2  2017 
+    ##  5 May        9.27 2017 
+    ##  6 June       0.2  2017 
+    ##  7 July       2.39 2017 
+    ##  8 January    2.34 2018 
+    ##  9 February   1.46 2018 
+    ## 10 March      3.57 2018 
+    ## 11 April      3.99 2018 
+    ## 12 May        5.64 2018 
+    ## 13 June       1.4  2018 
+    ## 14 July       7.09 2018 
+    ## 15 August     4.44 2018 
+    ## 16 September  1.95 2018 
+    ## 17 October    0    2018 
+    ## 18 November   0.11 2018 
+    ## 19 December   0.94 2018

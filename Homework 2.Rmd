@@ -56,7 +56,11 @@ precipitation_2018 =
 
 precipitation_2018
 
+precipitation_data = 
+  bind_rows(precipitation_2017, precipitation_2018) %>%
+  janitor::clean_names() %>%
+  mutate(month = month.name[as.numeric(month)])
 
-  
+precipitation_data
 ```
 
