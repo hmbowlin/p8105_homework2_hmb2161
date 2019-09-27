@@ -176,7 +176,7 @@ data show the amount of precipitation per month in 2017 and 2018. For
 
 # Problem 2
 
-\*Clean data
+\*Clean data in pols-month.csv
 
 ``` r
 library(tidyverse)
@@ -192,6 +192,7 @@ pols_month_data =
     names_prefix = "prez_",
     values_to = c("gop","dem")
    ) %>%
+  arrange(year, month) %>%
   select(-day)
 ```
 
@@ -215,14 +216,51 @@ pols_month_data
     ## # A tibble: 1,644 x 11
     ##    year  month gov_gop sen_gop rep_gop gov_dem sen_dem rep_dem president
     ##    <chr> <chr>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl> <chr>    
-    ##  1 1947  Janu…      23      51     253      23      45     198 gop      
-    ##  2 1947  Janu…      23      51     253      23      45     198 dem      
-    ##  3 1947  Febr…      23      51     253      23      45     198 gop      
-    ##  4 1947  Febr…      23      51     253      23      45     198 dem      
-    ##  5 1947  March      23      51     253      23      45     198 gop      
-    ##  6 1947  March      23      51     253      23      45     198 dem      
-    ##  7 1947  April      23      51     253      23      45     198 gop      
-    ##  8 1947  April      23      51     253      23      45     198 dem      
-    ##  9 1947  May        23      51     253      23      45     198 gop      
-    ## 10 1947  May        23      51     253      23      45     198 dem      
+    ##  1 1947  April      23      51     253      23      45     198 gop      
+    ##  2 1947  April      23      51     253      23      45     198 dem      
+    ##  3 1947  Augu…      23      51     253      23      45     198 gop      
+    ##  4 1947  Augu…      23      51     253      23      45     198 dem      
+    ##  5 1947  Dece…      24      51     253      23      45     198 gop      
+    ##  6 1947  Dece…      24      51     253      23      45     198 dem      
+    ##  7 1947  Febr…      23      51     253      23      45     198 gop      
+    ##  8 1947  Febr…      23      51     253      23      45     198 dem      
+    ##  9 1947  Janu…      23      51     253      23      45     198 gop      
+    ## 10 1947  Janu…      23      51     253      23      45     198 dem      
     ## # … with 1,634 more rows, and 2 more variables: gop <dbl>, dem <dbl>
+
+\*Clean data in snp.csv
+
+``` r
+snp_data =
+  read_csv(file = "./data_hw2/fivethirtyeight_datasets/snp.csv") %>%
+  janitor::clean_names(dat = .) %>%
+  separate(date, c("month","day","year")) %>%
+  mutate(month = month.name[as.numeric(month)]) %>%
+  arrange(year, month) %>%
+  select(year, month, close, -day)
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   date = col_character(),
+    ##   close = col_double()
+    ## )
+
+``` r
+snp_data
+```
+
+    ## # A tibble: 787 x 3
+    ##    year  month    close
+    ##    <chr> <chr>    <dbl>
+    ##  1 1950  April     18.0
+    ##  2 1950  August    18.4
+    ##  3 1950  December  20.4
+    ##  4 1950  February  17.2
+    ##  5 1950  January   17.0
+    ##  6 1950  July      17.8
+    ##  7 1950  June      17.7
+    ##  8 1950  March     17.3
+    ##  9 1950  May       18.8
+    ## 10 1950  November  19.5
+    ## # … with 777 more rows
