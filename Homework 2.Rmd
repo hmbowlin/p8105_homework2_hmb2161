@@ -63,4 +63,27 @@ precipitation_data =
 
 precipitation_data
 ```
-The data in the mrtrashwheel_data set has `r nrow(mrtrashwheel_data)` number of observations. The data describe the contents, weight, and volume of dumpsters during 2015 from April to December. The mean weight of the dumpsters is `r mean(pull(mrtrashwheel_data, weight_tons))` and the median number of sports balls in each dumpster is `r median(pull(mrtrashwheel_data, sport_balls))`. 
+The data in the mrtrashwheel_data set has `r nrow(mrtrashwheel_data)` number of observations. The data describe the contents, weight, and volume of dumpsters during 2015 from April to December. The mean weight of the dumpsters is `r mean(pull(mrtrashwheel_data, weight_tons))` and the median number of sports balls in each dumpster is `r median(pull(mrtrashwheel_data, sport_balls))`. The data in precipitation_data has `r nrow(precipitation_data)` number of observations. The data show the amount of precipitation per month in 2017 and 2018. For 2018 the amount of precipitation is 
+
+# Problem 2
+*Clean data
+```{r}
+library(tidyverse)
+library(dplyr)
+pols_month_data =
+  read_csv(file = "./data_hw2/fivethirtyeight_datasets/pols-month.csv") %>%
+  janitor::clean_names(dat = .) %>%
+  separate(mon, c("year", "month", "day")) %>%
+  mutate(month = month.name[as.numeric(month)]) %>%
+   pivot_longer(
+        cols = starts_with("prez_"),
+    names_to = "president",
+    names_prefix = "prez_",
+    values_to = c("gop","dem")
+   ) %>%
+  select(-day)
+
+pols_month_data
+
+```
+

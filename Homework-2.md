@@ -170,4 +170,59 @@ The data in the mrtrashwheel\_data set has 18 number of observations.
 The data describe the contents, weight, and volume of dumpsters during
 2015 from April to December. The mean weight of the dumpsters is
 3.6505556 and the median number of sports balls in each dumpster is
-14.5.
+14.5. The data in precipitation\_data has 19 number of observations. The
+data show the amount of precipitation per month in 2017 and 2018. For
+2018 the amount of precipitation is
+
+# Problem 2
+
+\*Clean data
+
+``` r
+library(tidyverse)
+library(dplyr)
+pols_month_data =
+  read_csv(file = "./data_hw2/fivethirtyeight_datasets/pols-month.csv") %>%
+  janitor::clean_names(dat = .) %>%
+  separate(mon, c("year", "month", "day")) %>%
+  mutate(month = month.name[as.numeric(month)]) %>%
+   pivot_longer(
+        cols = starts_with("prez_"),
+    names_to = "president",
+    names_prefix = "prez_",
+    values_to = c("gop","dem")
+   ) %>%
+  select(-day)
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   mon = col_date(format = ""),
+    ##   prez_gop = col_double(),
+    ##   gov_gop = col_double(),
+    ##   sen_gop = col_double(),
+    ##   rep_gop = col_double(),
+    ##   prez_dem = col_double(),
+    ##   gov_dem = col_double(),
+    ##   sen_dem = col_double(),
+    ##   rep_dem = col_double()
+    ## )
+
+``` r
+pols_month_data
+```
+
+    ## # A tibble: 1,644 x 11
+    ##    year  month gov_gop sen_gop rep_gop gov_dem sen_dem rep_dem president
+    ##    <chr> <chr>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl> <chr>    
+    ##  1 1947  Janu…      23      51     253      23      45     198 gop      
+    ##  2 1947  Janu…      23      51     253      23      45     198 dem      
+    ##  3 1947  Febr…      23      51     253      23      45     198 gop      
+    ##  4 1947  Febr…      23      51     253      23      45     198 dem      
+    ##  5 1947  March      23      51     253      23      45     198 gop      
+    ##  6 1947  March      23      51     253      23      45     198 dem      
+    ##  7 1947  April      23      51     253      23      45     198 gop      
+    ##  8 1947  April      23      51     253      23      45     198 dem      
+    ##  9 1947  May        23      51     253      23      45     198 gop      
+    ## 10 1947  May        23      51     253      23      45     198 dem      
+    ## # … with 1,634 more rows, and 2 more variables: gop <dbl>, dem <dbl>
