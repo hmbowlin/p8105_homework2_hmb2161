@@ -73,7 +73,7 @@ library(dplyr)
 pols_month_data =
   read_csv(file = "./data_hw2/fivethirtyeight_datasets/pols-month.csv") %>%
   janitor::clean_names(dat = .) %>%
-  separate(mon, c("year", "month", "day")) %>%
+  separate(mon, c("year", "month", "day"), convert = TRUE) %>%
   mutate(month = month.name[as.numeric(month)]) %>%
    pivot_longer(
         cols = starts_with("prez_"),
@@ -92,8 +92,8 @@ pols_month_data
 ```{r}
 snp_data =
   read_csv(file = "./data_hw2/fivethirtyeight_datasets/snp.csv") %>%
-  janitor::clean_names(dat = .) %>%
-  separate(date, c("month","day","year")) %>%
+  janitor::clean_names() %>%
+  separate(date, c("month","day","year"), convert = TRUE) %>%
   mutate(month = month.name[as.numeric(month)]) %>%
   arrange(year, month) %>%
   select(year, month, close, -day)
@@ -102,17 +102,27 @@ snp_data
 ```
 * Clean unemployment data
 ```{r}
-library(tidyverse)
-library(dplyr)
 unemployment_data = 
   read_csv(file = "./data_hw2/fivethirtyeight_datasets/unemployment.csv") %>%
    pivot_longer(
     Jan:Dec,
     names_to = "month",
     values_to = "rate") %>%
-   mutate(
-     month = month.name[match(month,month.abb)])
+   mutate(month = month.name[match(month,month.abb)]) %>%
+  janitor::clean_names()
  
  unemployment_data
+```
+* Joining datasets
+```{r}
+fivethirtyeight_data = 
+  bind_rows(pols_month_data, snp_data) %>%
+  janitor::clean_names()
+
+fivethirtyeight_data = 
+  bind_rows(fivethirtyeight_data, unemployment_data) %>%
+  janitor::clean_names()
+
+fivethirtyeight_data
 ```
 

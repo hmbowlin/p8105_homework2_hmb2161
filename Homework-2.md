@@ -184,7 +184,7 @@ library(dplyr)
 pols_month_data =
   read_csv(file = "./data_hw2/fivethirtyeight_datasets/pols-month.csv") %>%
   janitor::clean_names(dat = .) %>%
-  separate(mon, c("year", "month", "day")) %>%
+  separate(mon, c("year", "month", "day"), convert = TRUE) %>%
   mutate(month = month.name[as.numeric(month)]) %>%
    pivot_longer(
         cols = starts_with("prez_"),
@@ -214,18 +214,18 @@ pols_month_data
 ```
 
     ## # A tibble: 1,644 x 11
-    ##    year  month gov_gop sen_gop rep_gop gov_dem sen_dem rep_dem president
-    ##    <chr> <chr>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl> <chr>    
-    ##  1 1947  April      23      51     253      23      45     198 gop      
-    ##  2 1947  April      23      51     253      23      45     198 dem      
-    ##  3 1947  Augu…      23      51     253      23      45     198 gop      
-    ##  4 1947  Augu…      23      51     253      23      45     198 dem      
-    ##  5 1947  Dece…      24      51     253      23      45     198 gop      
-    ##  6 1947  Dece…      24      51     253      23      45     198 dem      
-    ##  7 1947  Febr…      23      51     253      23      45     198 gop      
-    ##  8 1947  Febr…      23      51     253      23      45     198 dem      
-    ##  9 1947  Janu…      23      51     253      23      45     198 gop      
-    ## 10 1947  Janu…      23      51     253      23      45     198 dem      
+    ##     year month gov_gop sen_gop rep_gop gov_dem sen_dem rep_dem president
+    ##    <int> <chr>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl> <chr>    
+    ##  1  1947 April      23      51     253      23      45     198 gop      
+    ##  2  1947 April      23      51     253      23      45     198 dem      
+    ##  3  1947 Augu…      23      51     253      23      45     198 gop      
+    ##  4  1947 Augu…      23      51     253      23      45     198 dem      
+    ##  5  1947 Dece…      24      51     253      23      45     198 gop      
+    ##  6  1947 Dece…      24      51     253      23      45     198 dem      
+    ##  7  1947 Febr…      23      51     253      23      45     198 gop      
+    ##  8  1947 Febr…      23      51     253      23      45     198 dem      
+    ##  9  1947 Janu…      23      51     253      23      45     198 gop      
+    ## 10  1947 Janu…      23      51     253      23      45     198 dem      
     ## # … with 1,634 more rows, and 2 more variables: gop <dbl>, dem <dbl>
 
 \*Clean data in snp.csv
@@ -233,8 +233,8 @@ pols_month_data
 ``` r
 snp_data =
   read_csv(file = "./data_hw2/fivethirtyeight_datasets/snp.csv") %>%
-  janitor::clean_names(dat = .) %>%
-  separate(date, c("month","day","year")) %>%
+  janitor::clean_names() %>%
+  separate(date, c("month","day","year"), convert = TRUE) %>%
   mutate(month = month.name[as.numeric(month)]) %>%
   arrange(year, month) %>%
   select(year, month, close, -day)
@@ -251,18 +251,18 @@ snp_data
 ```
 
     ## # A tibble: 787 x 3
-    ##    year  month    close
-    ##    <chr> <chr>    <dbl>
-    ##  1 1950  April     18.0
-    ##  2 1950  August    18.4
-    ##  3 1950  December  20.4
-    ##  4 1950  February  17.2
-    ##  5 1950  January   17.0
-    ##  6 1950  July      17.8
-    ##  7 1950  June      17.7
-    ##  8 1950  March     17.3
-    ##  9 1950  May       18.8
-    ## 10 1950  November  19.5
+    ##     year month    close
+    ##    <int> <chr>    <dbl>
+    ##  1  1950 April     18.0
+    ##  2  1950 August    18.4
+    ##  3  1950 December  20.4
+    ##  4  1950 February  17.2
+    ##  5  1950 January   17.0
+    ##  6  1950 July      17.8
+    ##  7  1950 June      17.7
+    ##  8  1950 March     17.3
+    ##  9  1950 May       18.8
+    ## 10  1950 November  19.5
     ## # … with 777 more rows
 
   - Clean unemployment data
@@ -270,16 +270,14 @@ snp_data
 <!-- end list -->
 
 ``` r
-library(tidyverse)
-library(dplyr)
 unemployment_data = 
   read_csv(file = "./data_hw2/fivethirtyeight_datasets/unemployment.csv") %>%
    pivot_longer(
     Jan:Dec,
     names_to = "month",
     values_to = "rate") %>%
-   mutate(
-     month = month.name[match(month,month.abb)])
+   mutate(month = month.name[match(month,month.abb)]) %>%
+  janitor::clean_names()
 ```
 
     ## Parsed with column specification:
@@ -304,7 +302,7 @@ unemployment_data =
 ```
 
     ## # A tibble: 816 x 3
-    ##     Year month      rate
+    ##     year month      rate
     ##    <dbl> <chr>     <dbl>
     ##  1  1948 January     3.4
     ##  2  1948 February    3.8
@@ -317,3 +315,35 @@ unemployment_data =
     ##  9  1948 September   3.8
     ## 10  1948 October     3.7
     ## # … with 806 more rows
+
+  - Joining datasets
+
+<!-- end list -->
+
+``` r
+fivethirtyeight_data = 
+  bind_rows(pols_month_data, snp_data) %>%
+  janitor::clean_names()
+
+fivethirtyeight_data = 
+  bind_rows(fivethirtyeight_data, unemployment_data) %>%
+  janitor::clean_names()
+
+fivethirtyeight_data
+```
+
+    ## # A tibble: 3,247 x 13
+    ##     year month gov_gop sen_gop rep_gop gov_dem sen_dem rep_dem president
+    ##    <dbl> <chr>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl> <chr>    
+    ##  1  1947 April      23      51     253      23      45     198 gop      
+    ##  2  1947 April      23      51     253      23      45     198 dem      
+    ##  3  1947 Augu…      23      51     253      23      45     198 gop      
+    ##  4  1947 Augu…      23      51     253      23      45     198 dem      
+    ##  5  1947 Dece…      24      51     253      23      45     198 gop      
+    ##  6  1947 Dece…      24      51     253      23      45     198 dem      
+    ##  7  1947 Febr…      23      51     253      23      45     198 gop      
+    ##  8  1947 Febr…      23      51     253      23      45     198 dem      
+    ##  9  1947 Janu…      23      51     253      23      45     198 gop      
+    ## 10  1947 Janu…      23      51     253      23      45     198 dem      
+    ## # … with 3,237 more rows, and 4 more variables: gop <dbl>, dem <dbl>,
+    ## #   close <dbl>, rate <dbl>
