@@ -100,4 +100,19 @@ snp_data =
 
 snp_data
 ```
+* Clean unemployment data
+```{r}
+library(tidyverse)
+library(dplyr)
+unemployment_data = 
+  read_csv(file = "./data_hw2/fivethirtyeight_datasets/unemployment.csv") %>%
+   pivot_longer(
+    Jan:Dec,
+    names_to = "month",
+    values_to = "rate") %>%
+   mutate(
+     month = month.name[match(month,month.abb)])
+ 
+ unemployment_data
+```
 
