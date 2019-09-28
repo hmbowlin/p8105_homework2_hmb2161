@@ -363,3 +363,49 @@ rate is NA. The unemployment\_data has 816 rows and 3columns. It’s
 important to note that all three of these datasets have different
 starting and ending months and years.The final combined dataset,
 fivethirtyeight\_data has 3247 rows and 13 columns.
+
+# Problem 3
+
+``` r
+popular_baby = 
+  read_csv(file = "./data_hw2/Popular_Baby_Names.csv") %>%
+  janitor::clean_names() %>%
+  mutate(ethnicity = recode(ethnicity, 'ASIAN AND PACIFIC ISLANDER' = "asian and pacific islander",'BLACK NON HISPANIC' = "black", 'HISPANIC' = "hispanic", 'WHITE NON HISPANIC' = "white", 'ASIAN AND PACI' = "asian and pacific islander", 'BLACK NON HISP' = "black", 'WHITE NON HISP' = "white")) %>%
+  group_by(childs_first_name, rank) %>%
+  mutate("count" = row_number()) %>%
+  pivot_wider(
+    names_from = "ethnicity",
+    values_from = "rank") %>%
+  select(-count) %>%
+  distinct()
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   `Year of Birth` = col_double(),
+    ##   Gender = col_character(),
+    ##   Ethnicity = col_character(),
+    ##   `Child's First Name` = col_character(),
+    ##   Count = col_double(),
+    ##   Rank = col_double()
+    ## )
+
+``` r
+popular_baby
+```
+
+    ## # A tibble: 8,698 x 7
+    ## # Groups:   childs_first_name [3,021]
+    ##    year_of_birth gender childs_first_na… `asian and paci… black hispanic
+    ##            <dbl> <chr>  <chr>                       <dbl> <dbl>    <dbl>
+    ##  1          2016 FEMALE Olivia                          1     8       13
+    ##  2          2016 FEMALE Chloe                           2     7       24
+    ##  3          2016 FEMALE Sophia                          3    15        2
+    ##  4          2016 FEMALE Emily                           4    27        7
+    ##  5          2016 FEMALE Emma                            4    29       NA
+    ##  6          2016 FEMALE Mia                             5    17        3
+    ##  7          2016 FEMALE Charlotte                       6    34       39
+    ##  8          2016 FEMALE Sarah                           7    28       38
+    ##  9          2016 FEMALE Isabella                        8    12        1
+    ## 10          2016 FEMALE Hannah                          8    36       69
+    ## # … with 8,688 more rows, and 1 more variable: white <dbl>
