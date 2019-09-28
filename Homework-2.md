@@ -347,3 +347,19 @@ fivethirtyeight_data
     ## 10  1947 Janu…      23      51     253      23      45     198 dem      
     ## # … with 3,237 more rows, and 4 more variables: gop <dbl>, dem <dbl>,
     ## #   close <dbl>, rate <dbl>
+
+These data show various election results from months and years along
+with certain SNP500 close values and unemployment rates. The
+pols\_month\_data data show whether or not the governor, senators,
+representatives, and president were democratic or republican in that
+month and year from April 1947 to March 1988. The pols\_month\_data has
+1644 rows and 11 columns. The snp\_data shows the month and year and the
+SNP close value of how the S\&P500 stock market index did from April
+1950 to May 2015. The average closing point of the S\&P over the 65
+years is 474.8887404. The snp\_data has 787 rows and 3 columns.The
+unemployment\_data dataset shows the unemployment rate for that month
+and year from January 1948 to December 2015. The average unemployment
+rate is NA. The unemployment\_data has 816 rows and 3columns. It’s
+important to note that all three of these datasets have different
+starting and ending months and years.The final combined dataset,
+fivethirtyeight\_data has 3247 rows and 13 columns.
