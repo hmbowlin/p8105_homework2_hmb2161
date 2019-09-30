@@ -69,21 +69,18 @@ The data in the mrtrashwheel_data set has `r nrow(mrtrashwheel_data)` number of 
 # Problem 2
 *Clean data in pols-month.csv
 ```{r}
-library(tidyverse)
-library(dplyr)
 pols_month_data =
   read_csv(file = "./data_hw2/fivethirtyeight_datasets/pols-month.csv") %>%
   janitor::clean_names(dat = .) %>%
   separate(mon, c("year", "month", "day"), convert = TRUE) %>%
-  mutate(month = month.name[as.numeric(month)]) %>%
-   pivot_longer(
-        cols = starts_with("prez_"),
-    names_to = "president",
-    names_prefix = "prez_",
-    values_to = c("gop","dem")
-   ) %>%
+   mutate(month = month.name[as.numeric(month)]) %>%
+  pivot_longer(starts_with("prez_"),
+               values_to = "binary") %>%
+  filter(binary == 1) %>%
   arrange(year, month) %>%
-  select(-day)
+  select(-day,-binary, president = name) %>%
+  transform(president = str_replace(president, "prez_", ""))%>%
+  distinct()
 
 pols_month_data
 
@@ -117,11 +114,11 @@ unemployment_data =
 * Joining datasets
 ```{r}
 fivethirtyeight_data = 
-  bind_rows(pols_month_data, snp_data) %>%
+  left_join(pols_month_data, snp_data, by = c("year", "month")) %>%
   janitor::clean_names()
 
 fivethirtyeight_data = 
-  bind_rows(fivethirtyeight_data, unemployment_data) %>%
+  left_join(fivethirtyeight_data, unemployment_data, by = c("year", "month")) %>%
   janitor::clean_names()
 
 fivethirtyeight_data
@@ -134,11 +131,9 @@ popular_baby =
   read_csv(file = "./data_hw2/Popular_Baby_Names.csv") %>%
   janitor::clean_names() %>%
   mutate(ethnicity = recode(ethnicity, 'ASIAN AND PACIFIC ISLANDER' = "asian and pacific islander",'BLACK NON HISPANIC' = "black", 'HISPANIC' = "hispanic", 'WHITE NON HISPANIC' = "white", 'ASIAN AND PACI' = "asian and pacific islander", 'BLACK NON HISP' = "black", 'WHITE NON HISP' = "white")) %>%
-  group_by(childs_first_name, rank) %>%
+  mutate(childs_first_name = str_to_lower(childs_first_name)) %>%
+  group_by(childs_first_name, rank, gender) %>%
   mutate("count" = row_number()) %>%
-  pivot_wider(
-    names_from = "ethnicity",
-    values_from = "rank") %>%
   select(-count) %>%
   distinct()
   
@@ -146,7 +141,20 @@ popular_baby
 ```
 *Create a table of the popularity of the name Olivia
 ```{r}
-
+female_name = 
+  arrange(popular_baby, year_of_birth, ethnicity, childs_first_name) %>%
+  filter(childs_first_name == "olivia")
+female_name
+```
+* Create a table of the most popular male baby names
+```{r}
+male_name = 
+  arrange(popular_baby, year_of_birth, ethnicity, childs_first_name) %>%
+  filter(gender == "MALE", rank == 1)
+male_name
+```
+* Create a ggplot of male, white, non-Hispanic children in 2016
+```{r}
 
 ```
 
