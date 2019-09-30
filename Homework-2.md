@@ -32,46 +32,33 @@ mrtrashwheel_data =
     "./data_hw2/mrtrashwheel.xlsx", 
     sheet = 1, 
     skip = 1,
+    range = "A2:N338",
     col_names = TRUE,
     col_types = NULL) %>%
 janitor::clean_names() %>%
 drop_na() %>%
-select(-homes_powered, -x15) %>%
+select(-homes_powered) %>%
 mutate(sport_balls = as.integer(sports_balls)) %>%
 select(-sports_balls)
-```
-
-    ## New names:
-    ## * `` -> ...15
-
-``` r
 mrtrashwheel_data
 ```
 
-    ## # A tibble: 18 x 13
+    ## # A tibble: 285 x 13
     ##    dumpster month  year date                weight_tons volume_cubic_ya…
     ##       <dbl> <chr> <dbl> <dttm>                    <dbl>            <dbl>
-    ##  1       57 April  2015 2015-04-20 00:00:00        3.03               15
-    ##  2       58 April  2015 2015-04-20 00:00:00        2.64               18
-    ##  3       71 June   2015 2015-06-09 00:00:00        3.83               15
-    ##  4       73 June   2015 2015-06-10 00:00:00        3.85               18
-    ##  5       74 June   2015 2015-06-10 00:00:00        4.48               15
-    ##  6       75 June   2015 2015-06-10 00:00:00        4.18               15
-    ##  7       76 June   2015 2015-06-10 00:00:00        3.38               18
-    ##  8       78 June   2015 2015-06-12 00:00:00        3.95               15
-    ##  9       97 Augu…  2015 2015-08-25 00:00:00        4.3                15
-    ## 10       98 Augu…  2015 2015-08-26 00:00:00        3.39               15
-    ## 11       99 Sept…  2015 2015-09-11 00:00:00        4.08               18
-    ## 12      100 Sept…  2015 2015-09-11 00:00:00        3.62               15
-    ## 13      101 Sept…  2015 2015-09-22 00:00:00        2.4                 7
-    ## 14      102 Sept…  2015 2015-09-30 00:00:00        4.24               18
-    ## 15      104 Octo…  2015 2015-10-12 00:00:00        2.9                15
-    ## 16      107 Nove…  2015 2015-11-20 00:00:00        4.46               15
-    ## 17      108 Dece…  2015 2015-12-02 00:00:00        3.42               18
-    ## 18      109 Dece…  2015 2015-12-02 00:00:00        3.56               15
-    ## # … with 7 more variables: plastic_bottles <dbl>, polystyrene <dbl>,
-    ## #   cigarette_butts <dbl>, glass_bottles <dbl>, grocery_bags <dbl>,
-    ## #   chip_bags <dbl>, sport_balls <int>
+    ##  1        1 May    2014 2014-05-16 00:00:00        4.31               18
+    ##  2        2 May    2014 2014-05-16 00:00:00        2.74               13
+    ##  3        3 May    2014 2014-05-16 00:00:00        3.45               15
+    ##  4        4 May    2014 2014-05-17 00:00:00        3.1                15
+    ##  5        5 May    2014 2014-05-17 00:00:00        4.06               18
+    ##  6        6 May    2014 2014-05-20 00:00:00        2.71               13
+    ##  7        7 May    2014 2014-05-21 00:00:00        1.91                8
+    ##  8        8 May    2014 2014-05-28 00:00:00        3.7                16
+    ##  9        9 June   2014 2014-06-05 00:00:00        2.52               14
+    ## 10       10 June   2014 2014-06-11 00:00:00        3.76               18
+    ## # … with 275 more rows, and 7 more variables: plastic_bottles <dbl>,
+    ## #   polystyrene <dbl>, cigarette_butts <dbl>, glass_bottles <dbl>,
+    ## #   grocery_bags <dbl>, chip_bags <dbl>, sport_balls <int>
 
   - Precipitation Sheets
 
@@ -166,13 +153,14 @@ precipitation_data
     ## 18 November   0.11 2018 
     ## 19 December   0.94 2018
 
-The data in the mrtrashwheel\_data set has 18 number of observations.
+The data in the mrtrashwheel\_data set has 285 number of observations.
 The data describe the contents, weight, and volume of dumpsters during
 2015 from April to December. The mean weight of the dumpsters is
-3.6505556 and the median number of sports balls in each dumpster is
-14.5. The data in precipitation\_data has 19 number of observations. The
+3.2804912 and the median number of sports balls in a dumpster in 2017 is
+8. The data in precipitation\_data has 19 number of observations. The
 data show the amount of precipitation per month in 2017 and 2018. For
-2018 the amount of precipitation is
+2018 the amount of precipitation is 32.93 inches and for 2017 the amount
+of precipitation is 23.5 inches.
 
 # Problem 2
 
@@ -409,3 +397,5 @@ popular_baby
     ##  9          2016 FEMALE Isabella                        8    12        1
     ## 10          2016 FEMALE Hannah                          8    36       69
     ## # … with 8,688 more rows, and 1 more variable: white <dbl>
+
+\*Create a table of the popularity of the name Olivia

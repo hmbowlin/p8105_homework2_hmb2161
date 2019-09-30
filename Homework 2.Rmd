@@ -17,11 +17,12 @@ mrtrashwheel_data =
     "./data_hw2/mrtrashwheel.xlsx", 
     sheet = 1, 
     skip = 1,
+    range = "A2:N338",
     col_names = TRUE,
     col_types = NULL) %>%
 janitor::clean_names() %>%
 drop_na() %>%
-select(-homes_powered, -x15) %>%
+select(-homes_powered) %>%
 mutate(sport_balls = as.integer(sports_balls)) %>%
 select(-sports_balls)
 mrtrashwheel_data
@@ -63,7 +64,7 @@ precipitation_data =
 
 precipitation_data
 ```
-The data in the mrtrashwheel_data set has `r nrow(mrtrashwheel_data)` number of observations. The data describe the contents, weight, and volume of dumpsters during 2015 from April to December. The mean weight of the dumpsters is `r mean(pull(mrtrashwheel_data, weight_tons))` and the median number of sports balls in each dumpster is `r median(pull(mrtrashwheel_data, sport_balls))`. The data in precipitation_data has `r nrow(precipitation_data)` number of observations. The data show the amount of precipitation per month in 2017 and 2018. For 2018 the amount of precipitation is 
+The data in the mrtrashwheel_data set has `r nrow(mrtrashwheel_data)` number of observations. The data describe the contents, weight, and volume of dumpsters during 2015 from April to December. The mean weight of the dumpsters is `r mean(pull(mrtrashwheel_data, weight_tons))` and the median number of sports balls in a dumpster in 2017 is `r median(pull(filter(mrtrashwheel_data, year == 2017), sport_balls))`. The data in precipitation_data has `r nrow(precipitation_data)` number of observations. The data show the amount of precipitation per month in 2017 and 2018. For 2018 the amount of precipitation is `r sum(pull(filter(precipitation_data, year == 2018), total))` inches and for 2017 the amount of precipitation is `r sum(pull(filter(precipitation_data, year == 2017), total))` inches.
 
 # Problem 2
 *Clean data in pols-month.csv
@@ -142,5 +143,10 @@ popular_baby =
   distinct()
   
 popular_baby
+```
+*Create a table of the popularity of the name Olivia
+```{r}
+
+
 ```
 
