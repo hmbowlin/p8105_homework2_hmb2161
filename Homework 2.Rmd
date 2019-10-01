@@ -9,58 +9,66 @@ output: github_document
 #Load tidyverse library
 library(tidyverse)
 
-# import in the Mr. Trash Wheel sheet from mrtrashwheel dataset
-# first row is skipped as it contains company logo, blank celsl are dropped, and the names are cleaned up
-# drop any blank cells, select everything but homes_powered and x15, change sports_balls to an integer format
+# Import in the Mr. Trash Wheel sheet from mrtrashwheel dataset
+# First row is skipped as it contains company logo, blank celsl are dropped, and the names are cleaned up
 mrtrashwheel_data = 
   readxl::read_excel(
-    "./data_hw2/mrtrashwheel.xlsx", 
+    "./data_hw2/trash_wheel_update.xlsx", 
     sheet = 1, 
     skip = 1,
     range = "A2:N338",
     col_names = TRUE,
     col_types = NULL) %>%
 janitor::clean_names() %>%
+#Drop any blank cells
 drop_na() %>%
+#Select everything but homes_powered
 select(-homes_powered) %>%
+#Change sports_balls to an integer format
 mutate(sport_balls = as.integer(sports_balls)) %>%
+#Drop non-integer sports ball variable
 select(-sports_balls)
+
 mrtrashwheel_data
 
 ```
 
 * Precipitation Sheets
 ```{r}
+#Import precipitation 2017 data from the 3rd sheet, mutate year to 2017, clean up the names, and drop any rows with blank cells
 precipitation_2017 = 
   readxl::read_excel(
-    "./data_hw2/mrtrashwheel.xlsx", 
-    sheet = 3,
+    "./data_hw2/trash_wheel_update.xlsx", 
+    sheet = 6,
     range = "A2:B14",
     col_names = TRUE,
     col_types = NULL) %>%
   mutate(year = "2017") %>%
   janitor::clean_names() %>%
+  mutate(month = month.name[as.numeric(month)]) %>%
   drop_na()
 
 precipitation_2017
 
+#Import precipitation data from 2018 from the 4th sheet, mutate year to 2018, clean up the names, and drop any blank cells
 precipitation_2018 = 
   readxl::read_excel(
-    "./data_hw2/mrtrashwheel.xlsx", 
-    sheet = 4,
+    "./data_hw2/trash_wheel_update.xlsx", 
+    sheet = 5,
     range = "A2:B14",
     col_names = TRUE,
     col_types = NULL) %>%
   mutate(year = "2018") %>%
   janitor::clean_names() %>%
+  mutate(month = month.name[as.numeric(month)]) %>%
   drop_na()
 
 precipitation_2018
 
+#Combine the two datasets into one precipitation_data set, bind rows, clean the names, mutate the month to month name
 precipitation_data = 
   bind_rows(precipitation_2017, precipitation_2018) %>%
-  janitor::clean_names() %>%
-  mutate(month = month.name[as.numeric(month)])
+  janitor::clean_names() 
 
 precipitation_data
 ```
@@ -69,17 +77,26 @@ The data in the mrtrashwheel_data set has `r nrow(mrtrashwheel_data)` number of 
 # Problem 2
 *Clean data in pols-month.csv
 ```{r}
+#Import in pols_month data
 pols_month_data =
   read_csv(file = "./data_hw2/fivethirtyeight_datasets/pols-month.csv") %>%
-  janitor::clean_names(dat = .) %>%
+  #Clean names
+  janitor::clean_names() %>%
+  #Separate the date into year, month, and day
   separate(mon, c("year", "month", "day"), convert = TRUE) %>%
    mutate(month = month.name[as.numeric(month)]) %>%
+  #Pivot longer to make prez_gop and prez_dem one column
   pivot_longer(starts_with("prez_"),
                values_to = "binary") %>%
+  #Filter for the ones in the binary column
   filter(binary == 1) %>%
+  #Arrange by year and month
   arrange(year, month) %>%
+  #Get rid of binary and day columns, change the column we pivoted to president
   select(-day,-binary, president = name) %>%
+  #Transform president so that we drop "prez_" from the beginning of each value
   transform(president = str_replace(president, "prez_", ""))%>%
+  #Make sure each row is distinct (remove duplicates)
   distinct()
 
 pols_month_data
@@ -88,62 +105,84 @@ pols_month_data
 
 *Clean data in snp.csv
 ```{r}
+#Import SNP data
 snp_data =
   read_csv(file = "./data_hw2/fivethirtyeight_datasets/snp.csv") %>%
+#Clean names
   janitor::clean_names() %>%
+#Separate out date as month, day, and year
   separate(date, c("month","day","year"), convert = TRUE) %>%
+#Change month to month name
   mutate(month = month.name[as.numeric(month)]) %>%
+#Arrange the data with year and month as leading columns
   arrange(year, month) %>%
+#Select everything, but the day column
   select(year, month, close, -day)
 
 snp_data
 ```
 * Clean unemployment data
 ```{r}
+#Import unemployment dataset
 unemployment_data = 
   read_csv(file = "./data_hw2/fivethirtyeight_datasets/unemployment.csv") %>%
+#Pivot the data so that Jan through Dec rows are columns with month as variable
    pivot_longer(
     Jan:Dec,
     names_to = "month",
     values_to = "rate") %>%
+#Mutate the month to be month name
    mutate(month = month.name[match(month,month.abb)]) %>%
+#Clean names
   janitor::clean_names()
  
  unemployment_data
 ```
 * Joining datasets
 ```{r}
-fivethirtyeight_data = 
+#Join pols_month_data and snp_data together by a concatenated primary key year and month
+fivethirtyeight_first_data = 
   left_join(pols_month_data, snp_data, by = c("year", "month")) %>%
+#Ensure the names stay clean
   janitor::clean_names()
 
+#Join the dataset above with unemployment data by a concatenated primary key year and month
 fivethirtyeight_data = 
-  left_join(fivethirtyeight_data, unemployment_data, by = c("year", "month")) %>%
+  left_join(fivethirtyeight_first_data, unemployment_data, by = c("year", "month")) %>%
   janitor::clean_names()
 
+#The resulting dataset has all three datasets from problem 2 by year and month
 fivethirtyeight_data
 ```
 These data show various election results from months and years along with certain SNP500 close values and unemployment rates. The pols_month_data data show whether or not the governor, senators, representatives, and president were democratic or republican in that month and year from April 1947 to March 1988. The pols_month_data has `r nrow(pols_month_data)` rows and `r ncol(pols_month_data)` columns. The snp_data shows the month and year and the SNP close value of how the S&P500 stock market index did from April 1950 to May 2015. The average closing point of the S&P over the 65 years is `r mean(pull(snp_data, close))`. The snp_data has `r nrow(snp_data)` rows and `r ncol(snp_data)` columns.The unemployment_data dataset shows the unemployment rate for that month and year from January 1948 to December 2015. The average unemployment rate is `r mean(pull(unemployment_data, rate))`. The unemployment_data has `r nrow(unemployment_data)` rows and `r ncol(unemployment_data)`columns. It's important to note that all three of these datasets have different starting and ending months and years.The final combined dataset, fivethirtyeight_data has `r nrow(fivethirtyeight_data)` rows and `r ncol(fivethirtyeight_data)` columns. 
 
 # Problem 3
 ```{r}
+#Import in popular aby names dataset
 popular_baby = 
   read_csv(file = "./data_hw2/Popular_Baby_Names.csv") %>%
+#Clean names
   janitor::clean_names() %>%
+#Mutate the variable ethnicity to be in consistent format (changed the names to be all the same)
   mutate(ethnicity = recode(ethnicity, 'ASIAN AND PACIFIC ISLANDER' = "asian and pacific islander",'BLACK NON HISPANIC' = "black", 'HISPANIC' = "hispanic", 'WHITE NON HISPANIC' = "white", 'ASIAN AND PACI' = "asian and pacific islander", 'BLACK NON HISP' = "black", 'WHITE NON HISP' = "white")) %>%
+#Mutate the childs_first_name values to lowercase as some are upper and some are lower
   mutate(childs_first_name = str_to_lower(childs_first_name)) %>%
+#Group the data by first name, rank, and gender
   group_by(childs_first_name, rank, gender) %>%
-  mutate("count" = row_number()) %>%
-  select(-count) %>%
+#Ensure the rows are distinct
   distinct()
   
 popular_baby
 ```
 *Create a table of the popularity of the name Olivia
 ```{r}
+#Create data table with name Olivia as female baby name over time
 female_name = 
   arrange(popular_baby, year_of_birth, ethnicity, childs_first_name) %>%
-  filter(childs_first_name == "olivia")
+  filter(childs_first_name == "olivia") %>%
+  pivot_wider(ethnicity,
+              names_from = "rank",
+              values_from = "ethnicity")
 female_name
 ```
 * Create a table of the most popular male baby names

@@ -24,26 +24,30 @@ library(tidyverse)
     ## ✖ dplyr::lag()    masks stats::lag()
 
 ``` r
-# import in the Mr. Trash Wheel sheet from mrtrashwheel dataset
-# first row is skipped as it contains company logo, blank celsl are dropped, and the names are cleaned up
-# drop any blank cells, select everything but homes_powered and x15, change sports_balls to an integer format
+# Import in the Mr. Trash Wheel sheet from mrtrashwheel dataset
+# First row is skipped as it contains company logo, blank celsl are dropped, and the names are cleaned up
 mrtrashwheel_data = 
   readxl::read_excel(
-    "./data_hw2/mrtrashwheel.xlsx", 
+    "./data_hw2/trash_wheel_update.xlsx", 
     sheet = 1, 
     skip = 1,
     range = "A2:N338",
     col_names = TRUE,
     col_types = NULL) %>%
 janitor::clean_names() %>%
+#Drop any blank cells
 drop_na() %>%
+#Select everything but homes_powered
 select(-homes_powered) %>%
+#Change sports_balls to an integer format
 mutate(sport_balls = as.integer(sports_balls)) %>%
+#Drop non-integer sports ball variable
 select(-sports_balls)
+
 mrtrashwheel_data
 ```
 
-    ## # A tibble: 285 x 13
+    ## # A tibble: 286 x 13
     ##    dumpster month  year date                weight_tons volume_cubic_ya…
     ##       <dbl> <chr> <dbl> <dttm>                    <dbl>            <dbl>
     ##  1        1 May    2014 2014-05-16 00:00:00        4.31               18
@@ -56,128 +60,139 @@ mrtrashwheel_data
     ##  8        8 May    2014 2014-05-28 00:00:00        3.7                16
     ##  9        9 June   2014 2014-06-05 00:00:00        2.52               14
     ## 10       10 June   2014 2014-06-11 00:00:00        3.76               18
-    ## # … with 275 more rows, and 7 more variables: plastic_bottles <dbl>,
+    ## # … with 276 more rows, and 7 more variables: plastic_bottles <dbl>,
     ## #   polystyrene <dbl>, cigarette_butts <dbl>, glass_bottles <dbl>,
     ## #   grocery_bags <dbl>, chip_bags <dbl>, sport_balls <int>
 
-  - Precipitation Sheets
+  - Precipitation
+Sheets
 
 <!-- end list -->
 
 ``` r
+#Import precipitation 2017 data from the 3rd sheet, mutate year to 2017, clean up the names, and drop any rows with blank cells
 precipitation_2017 = 
   readxl::read_excel(
-    "./data_hw2/mrtrashwheel.xlsx", 
-    sheet = 3,
+    "./data_hw2/trash_wheel_update.xlsx", 
+    sheet = 6,
     range = "A2:B14",
     col_names = TRUE,
     col_types = NULL) %>%
   mutate(year = "2017") %>%
   janitor::clean_names() %>%
+  mutate(month = month.name[as.numeric(month)]) %>%
   drop_na()
 
 precipitation_2017
 ```
 
-    ## # A tibble: 7 x 3
-    ##   month total year 
-    ##   <dbl> <dbl> <chr>
-    ## 1     1  0.96 2017 
-    ## 2     2  5.3  2017 
-    ## 3     3  2.18 2017 
-    ## 4     4  3.2  2017 
-    ## 5     5  9.27 2017 
-    ## 6     6  0.2  2017 
-    ## 7     7  2.39 2017
+    ## # A tibble: 12 x 3
+    ##    month     total year 
+    ##    <chr>     <dbl> <chr>
+    ##  1 January    2.34 2017 
+    ##  2 February   1.46 2017 
+    ##  3 March      3.57 2017 
+    ##  4 April      3.99 2017 
+    ##  5 May        5.64 2017 
+    ##  6 June       1.4  2017 
+    ##  7 July       7.09 2017 
+    ##  8 August     4.44 2017 
+    ##  9 September  1.95 2017 
+    ## 10 October    0    2017 
+    ## 11 November   0.11 2017 
+    ## 12 December   0.94 2017
 
 ``` r
+#Import precipitation data from 2018 from the 4th sheet, mutate year to 2018, clean up the names, and drop any blank cells
 precipitation_2018 = 
   readxl::read_excel(
-    "./data_hw2/mrtrashwheel.xlsx", 
-    sheet = 4,
+    "./data_hw2/trash_wheel_update.xlsx", 
+    sheet = 5,
     range = "A2:B14",
     col_names = TRUE,
     col_types = NULL) %>%
   mutate(year = "2018") %>%
   janitor::clean_names() %>%
+  mutate(month = month.name[as.numeric(month)]) %>%
   drop_na()
 
 precipitation_2018
 ```
 
     ## # A tibble: 12 x 3
-    ##    month total year 
-    ##    <dbl> <dbl> <chr>
-    ##  1     1  2.34 2018 
-    ##  2     2  1.46 2018 
-    ##  3     3  3.57 2018 
-    ##  4     4  3.99 2018 
-    ##  5     5  5.64 2018 
-    ##  6     6  1.4  2018 
-    ##  7     7  7.09 2018 
-    ##  8     8  4.44 2018 
-    ##  9     9  1.95 2018 
-    ## 10    10  0    2018 
-    ## 11    11  0.11 2018 
-    ## 12    12  0.94 2018
+    ##    month     total year 
+    ##    <chr>     <dbl> <chr>
+    ##  1 January    0.94 2018 
+    ##  2 February   4.8  2018 
+    ##  3 March      2.69 2018 
+    ##  4 April      4.69 2018 
+    ##  5 May        9.27 2018 
+    ##  6 June       4.77 2018 
+    ##  7 July      10.2  2018 
+    ##  8 August     6.45 2018 
+    ##  9 September 10.5  2018 
+    ## 10 October    2.12 2018 
+    ## 11 November   7.82 2018 
+    ## 12 December   6.11 2018
 
 ``` r
+#Combine the two datasets into one precipitation_data set, bind rows, clean the names, mutate the month to month name
 precipitation_data = 
   bind_rows(precipitation_2017, precipitation_2018) %>%
-  janitor::clean_names() %>%
-  mutate(month = month.name[as.numeric(month)])
+  janitor::clean_names() 
 
 precipitation_data
 ```
 
-    ## # A tibble: 19 x 3
+    ## # A tibble: 24 x 3
     ##    month     total year 
     ##    <chr>     <dbl> <chr>
-    ##  1 January    0.96 2017 
-    ##  2 February   5.3  2017 
-    ##  3 March      2.18 2017 
-    ##  4 April      3.2  2017 
-    ##  5 May        9.27 2017 
-    ##  6 June       0.2  2017 
-    ##  7 July       2.39 2017 
-    ##  8 January    2.34 2018 
-    ##  9 February   1.46 2018 
-    ## 10 March      3.57 2018 
-    ## 11 April      3.99 2018 
-    ## 12 May        5.64 2018 
-    ## 13 June       1.4  2018 
-    ## 14 July       7.09 2018 
-    ## 15 August     4.44 2018 
-    ## 16 September  1.95 2018 
-    ## 17 October    0    2018 
-    ## 18 November   0.11 2018 
-    ## 19 December   0.94 2018
+    ##  1 January    2.34 2017 
+    ##  2 February   1.46 2017 
+    ##  3 March      3.57 2017 
+    ##  4 April      3.99 2017 
+    ##  5 May        5.64 2017 
+    ##  6 June       1.4  2017 
+    ##  7 July       7.09 2017 
+    ##  8 August     4.44 2017 
+    ##  9 September  1.95 2017 
+    ## 10 October    0    2017 
+    ## # … with 14 more rows
 
-The data in the mrtrashwheel\_data set has 285 number of observations.
+The data in the mrtrashwheel\_data set has 286 number of observations.
 The data describe the contents, weight, and volume of dumpsters during
 2015 from April to December. The mean weight of the dumpsters is
-3.2804912 and the median number of sports balls in a dumpster in 2017 is
-8. The data in precipitation\_data has 19 number of observations. The
+3.2805944 and the median number of sports balls in a dumpster in 2017 is
+8. The data in precipitation\_data has 24 number of observations. The
 data show the amount of precipitation per month in 2017 and 2018. For
-2018 the amount of precipitation is 32.93 inches and for 2017 the amount
-of precipitation is 23.5 inches.
+2018 the amount of precipitation is 70.33 inches and for 2017 the amount
+of precipitation is 32.93 inches.
 
 # Problem 2
 
 \*Clean data in pols-month.csv
 
 ``` r
+#Import in pols_month data
 pols_month_data =
   read_csv(file = "./data_hw2/fivethirtyeight_datasets/pols-month.csv") %>%
-  janitor::clean_names(dat = .) %>%
+  #Clean names
+  janitor::clean_names() %>%
+  #Separate the date into year, month, and day
   separate(mon, c("year", "month", "day"), convert = TRUE) %>%
    mutate(month = month.name[as.numeric(month)]) %>%
+  #Pivot longer to make prez_gop and prez_dem one column
   pivot_longer(starts_with("prez_"),
                values_to = "binary") %>%
+  #Filter for the ones in the binary column
   filter(binary == 1) %>%
+  #Arrange by year and month
   arrange(year, month) %>%
+  #Get rid of binary and day columns, change the column we pivoted to president
   select(-day,-binary, president = name) %>%
+  #Transform president so that we drop "prez_" from the beginning of each value
   transform(president = str_replace(president, "prez_", ""))%>%
+  #Make sure each row is distinct (remove duplicates)
   distinct()
 ```
 
@@ -1838,12 +1853,18 @@ pols_month_data
 \*Clean data in snp.csv
 
 ``` r
+#Import SNP data
 snp_data =
   read_csv(file = "./data_hw2/fivethirtyeight_datasets/snp.csv") %>%
+#Clean names
   janitor::clean_names() %>%
+#Separate out date as month, day, and year
   separate(date, c("month","day","year"), convert = TRUE) %>%
+#Change month to month name
   mutate(month = month.name[as.numeric(month)]) %>%
+#Arrange the data with year and month as leading columns
   arrange(year, month) %>%
+#Select everything, but the day column
   select(year, month, close, -day)
 ```
 
@@ -1877,13 +1898,17 @@ snp_data
 <!-- end list -->
 
 ``` r
+#Import unemployment dataset
 unemployment_data = 
   read_csv(file = "./data_hw2/fivethirtyeight_datasets/unemployment.csv") %>%
+#Pivot the data so that Jan through Dec rows are columns with month as variable
    pivot_longer(
     Jan:Dec,
     names_to = "month",
     values_to = "rate") %>%
+#Mutate the month to be month name
    mutate(month = month.name[match(month,month.abb)]) %>%
+#Clean names
   janitor::clean_names()
 ```
 
@@ -1923,19 +1948,24 @@ unemployment_data =
     ## 10  1948 October     3.7
     ## # … with 806 more rows
 
-  - Joining datasets
+  - Joining
+datasets
 
 <!-- end list -->
 
 ``` r
-fivethirtyeight_data = 
+#Join pols_month_data and snp_data together by a concatenated primary key year and month
+fivethirtyeight_first_data = 
   left_join(pols_month_data, snp_data, by = c("year", "month")) %>%
+#Ensure the names stay clean
   janitor::clean_names()
 
+#Join the dataset above with unemployment data by a concatenated primary key year and month
 fivethirtyeight_data = 
-  left_join(fivethirtyeight_data, unemployment_data, by = c("year", "month")) %>%
+  left_join(fivethirtyeight_first_data, unemployment_data, by = c("year", "month")) %>%
   janitor::clean_names()
 
+#The resulting dataset has all three datasets from problem 2 by year and month
 fivethirtyeight_data
 ```
 
@@ -3595,14 +3625,18 @@ fivethirtyeight\_data has 817 rows and 11 columns.
 # Problem 3
 
 ``` r
+#Import in popular aby names dataset
 popular_baby = 
   read_csv(file = "./data_hw2/Popular_Baby_Names.csv") %>%
+#Clean names
   janitor::clean_names() %>%
+#Mutate the variable ethnicity to be in consistent format (changed the names to be all the same)
   mutate(ethnicity = recode(ethnicity, 'ASIAN AND PACIFIC ISLANDER' = "asian and pacific islander",'BLACK NON HISPANIC' = "black", 'HISPANIC' = "hispanic", 'WHITE NON HISPANIC' = "white", 'ASIAN AND PACI' = "asian and pacific islander", 'BLACK NON HISP' = "black", 'WHITE NON HISP' = "white")) %>%
+#Mutate the childs_first_name values to lowercase as some are upper and some are lower
   mutate(childs_first_name = str_to_lower(childs_first_name)) %>%
+#Group the data by first name, rank, and gender
   group_by(childs_first_name, rank, gender) %>%
-  mutate("count" = row_number()) %>%
-  select(-count) %>%
+#Ensure the rows are distinct
   distinct()
 ```
 
@@ -3620,46 +3654,47 @@ popular_baby =
 popular_baby
 ```
 
-    ## # A tibble: 12,181 x 5
+    ## # A tibble: 12,181 x 6
     ## # Groups:   childs_first_name, rank, gender [10,383]
-    ##    year_of_birth gender ethnicity                  childs_first_name  rank
-    ##            <dbl> <chr>  <chr>                      <chr>             <dbl>
-    ##  1          2016 FEMALE asian and pacific islander olivia                1
-    ##  2          2016 FEMALE asian and pacific islander chloe                 2
-    ##  3          2016 FEMALE asian and pacific islander sophia                3
-    ##  4          2016 FEMALE asian and pacific islander emily                 4
-    ##  5          2016 FEMALE asian and pacific islander emma                  4
-    ##  6          2016 FEMALE asian and pacific islander mia                   5
-    ##  7          2016 FEMALE asian and pacific islander charlotte             6
-    ##  8          2016 FEMALE asian and pacific islander sarah                 7
-    ##  9          2016 FEMALE asian and pacific islander isabella              8
-    ## 10          2016 FEMALE asian and pacific islander hannah                8
+    ##    year_of_birth gender ethnicity              childs_first_na… count  rank
+    ##            <dbl> <chr>  <chr>                  <chr>            <dbl> <dbl>
+    ##  1          2016 FEMALE asian and pacific isl… olivia             172     1
+    ##  2          2016 FEMALE asian and pacific isl… chloe              112     2
+    ##  3          2016 FEMALE asian and pacific isl… sophia             104     3
+    ##  4          2016 FEMALE asian and pacific isl… emily               99     4
+    ##  5          2016 FEMALE asian and pacific isl… emma                99     4
+    ##  6          2016 FEMALE asian and pacific isl… mia                 79     5
+    ##  7          2016 FEMALE asian and pacific isl… charlotte           59     6
+    ##  8          2016 FEMALE asian and pacific isl… sarah               57     7
+    ##  9          2016 FEMALE asian and pacific isl… isabella            56     8
+    ## 10          2016 FEMALE asian and pacific isl… hannah              56     8
     ## # … with 12,171 more rows
 
 \*Create a table of the popularity of the name Olivia
 
 ``` r
+#Create data table with name Olivia as female baby name over time
 female_name = 
   arrange(popular_baby, year_of_birth, ethnicity, childs_first_name) %>%
-  filter(childs_first_name == "olivia")
+  filter(childs_first_name == "olivia") %>%
+  pivot_wider(ethnicity,
+              names_from = "rank",
+              values_from = "ethnicity")
+```
+
+    ## Warning: Values in `ethnicity` are not uniquely identified; output will contain list-cols.
+    ## * Use `values_fn = list(ethnicity = list)` to suppress this warning.
+    ## * Use `values_fn = list(ethnicity = length)` to identify where the duplicates arise
+    ## * Use `values_fn = list(ethnicity = summary_fun)` to summarise duplicates
+
+``` r
 female_name
 ```
 
-    ## # A tibble: 24 x 5
-    ## # Groups:   childs_first_name, rank, gender [11]
-    ##    year_of_birth gender ethnicity                  childs_first_name  rank
-    ##            <dbl> <chr>  <chr>                      <chr>             <dbl>
-    ##  1          2011 FEMALE asian and pacific islander olivia                4
-    ##  2          2011 FEMALE black                      olivia               10
-    ##  3          2011 FEMALE hispanic                   olivia               18
-    ##  4          2011 FEMALE white                      olivia                2
-    ##  5          2012 FEMALE asian and pacific islander olivia                3
-    ##  6          2012 FEMALE black                      olivia                8
-    ##  7          2012 FEMALE hispanic                   olivia               22
-    ##  8          2012 FEMALE white                      olivia                4
-    ##  9          2013 FEMALE asian and pacific islander olivia                3
-    ## 10          2013 FEMALE black                      olivia                6
-    ## # … with 14 more rows
+    ## # A tibble: 1 x 11
+    ##      `4`   `10`   `18`    `2`    `3`    `8`   `22`    `6`   `1`  `16`  `13`
+    ##   <list> <list> <list> <list> <list> <list> <list> <list> <lis> <lis> <lis>
+    ## 1    [3]    [1]    [1]    [1]    [2]    [3]    [2]    [1]   [7]   [2]   [1]
 
   - Create a table of the most popular male baby names
 
@@ -3672,20 +3707,20 @@ male_name =
 male_name
 ```
 
-    ## # A tibble: 24 x 5
+    ## # A tibble: 24 x 6
     ## # Groups:   childs_first_name, rank, gender [8]
-    ##    year_of_birth gender ethnicity                  childs_first_name  rank
-    ##            <dbl> <chr>  <chr>                      <chr>             <dbl>
-    ##  1          2011 MALE   asian and pacific islander ethan                 1
-    ##  2          2011 MALE   black                      jayden                1
-    ##  3          2011 MALE   hispanic                   jayden                1
-    ##  4          2011 MALE   white                      michael               1
-    ##  5          2012 MALE   asian and pacific islander ryan                  1
-    ##  6          2012 MALE   black                      jayden                1
-    ##  7          2012 MALE   hispanic                   jayden                1
-    ##  8          2012 MALE   white                      joseph                1
-    ##  9          2013 MALE   asian and pacific islander jayden                1
-    ## 10          2013 MALE   black                      ethan                 1
+    ##    year_of_birth gender ethnicity              childs_first_na… count  rank
+    ##            <dbl> <chr>  <chr>                  <chr>            <dbl> <dbl>
+    ##  1          2011 MALE   asian and pacific isl… ethan              177     1
+    ##  2          2011 MALE   black                  jayden             184     1
+    ##  3          2011 MALE   hispanic               jayden             426     1
+    ##  4          2011 MALE   white                  michael            292     1
+    ##  5          2012 MALE   asian and pacific isl… ryan               197     1
+    ##  6          2012 MALE   black                  jayden             171     1
+    ##  7          2012 MALE   hispanic               jayden             364     1
+    ##  8          2012 MALE   white                  joseph             300     1
+    ##  9          2013 MALE   asian and pacific isl… jayden             220     1
+    ## 10          2013 MALE   black                  ethan              146     1
     ## # … with 14 more rows
 
   - Create a ggplot of male, white, non-Hispanic children in 2016
