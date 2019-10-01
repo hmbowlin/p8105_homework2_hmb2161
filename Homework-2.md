@@ -12,14 +12,14 @@ Homework 2
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ─────────────────────────────────────── tidyverse 1.2.1 ──
+    ## ── Attaching packages ────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 
     ## ✔ ggplot2 3.2.1     ✔ purrr   0.3.2
     ## ✔ tibble  2.1.3     ✔ dplyr   0.8.3
     ## ✔ tidyr   1.0.0     ✔ stringr 1.4.0
     ## ✔ readr   1.3.1     ✔ forcats 0.4.0
 
-    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ───────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
 
@@ -175,30 +175,6 @@ of precipitation is 32.93 inches.
 
 \*Clean data in pols-month.csv
 
-``` r
-#Import in pols_month data
-pols_month_data =
-  read_csv(file = "./data_hw2/fivethirtyeight_datasets/pols-month.csv") %>%
-  #Clean names
-  janitor::clean_names() %>%
-  #Separate the date into year, month, and day
-  separate(mon, c("year", "month", "day"), convert = TRUE) %>%
-   mutate(month = month.name[as.numeric(month)]) %>%
-  #Pivot longer to make prez_gop and prez_dem one column
-  pivot_longer(starts_with("prez_"),
-               values_to = "binary") %>%
-  #Filter for the ones in the binary column
-  filter(binary == 1) %>%
-  #Arrange by year and month
-  arrange(year, month) %>%
-  #Get rid of binary and day columns, change the column we pivoted to president
-  select(-day,-binary, president = name) %>%
-  #Transform president so that we drop "prez_" from the beginning of each value
-  transform(president = str_replace(president, "prez_", ""))%>%
-  #Make sure each row is distinct (remove duplicates)
-  distinct()
-```
-
     ## Parsed with column specification:
     ## cols(
     ##   mon = col_date(format = ""),
@@ -211,10 +187,6 @@ pols_month_data =
     ##   sen_dem = col_double(),
     ##   rep_dem = col_double()
     ## )
-
-``` r
-pols_month_data
-```
 
     ##     year     month gov_gop sen_gop rep_gop gov_dem sen_dem rep_dem
     ## 1   1947     April      23      51     253      23      45     198
@@ -3637,6 +3609,7 @@ popular_baby =
   mutate(ethnicity = recode(ethnicity, 'ASIAN AND PACIFIC ISLANDER' = "asian and pacific islander",'BLACK NON HISPANIC' = "black", 'HISPANIC' = "hispanic", 'WHITE NON HISPANIC' = "white", 'ASIAN AND PACI' = "asian and pacific islander", 'BLACK NON HISP' = "black", 'WHITE NON HISP' = "white")) %>%
 #Mutate the childs_first_name values to lowercase as some are upper and some are lower
   mutate(childs_first_name = str_to_lower(childs_first_name)) %>%
+  mutate(gender = str_to_lower(gender)) %>%
 #Group the data by first name, rank, and gender
   group_by(childs_first_name, rank, gender) %>%
 #Ensure the rows are distinct
@@ -3661,16 +3634,16 @@ popular_baby
     ## # Groups:   childs_first_name, rank, gender [10,383]
     ##    year_of_birth gender ethnicity              childs_first_na… count  rank
     ##            <dbl> <chr>  <chr>                  <chr>            <dbl> <dbl>
-    ##  1          2016 FEMALE asian and pacific isl… olivia             172     1
-    ##  2          2016 FEMALE asian and pacific isl… chloe              112     2
-    ##  3          2016 FEMALE asian and pacific isl… sophia             104     3
-    ##  4          2016 FEMALE asian and pacific isl… emily               99     4
-    ##  5          2016 FEMALE asian and pacific isl… emma                99     4
-    ##  6          2016 FEMALE asian and pacific isl… mia                 79     5
-    ##  7          2016 FEMALE asian and pacific isl… charlotte           59     6
-    ##  8          2016 FEMALE asian and pacific isl… sarah               57     7
-    ##  9          2016 FEMALE asian and pacific isl… isabella            56     8
-    ## 10          2016 FEMALE asian and pacific isl… hannah              56     8
+    ##  1          2016 female asian and pacific isl… olivia             172     1
+    ##  2          2016 female asian and pacific isl… chloe              112     2
+    ##  3          2016 female asian and pacific isl… sophia             104     3
+    ##  4          2016 female asian and pacific isl… emily               99     4
+    ##  5          2016 female asian and pacific isl… emma                99     4
+    ##  6          2016 female asian and pacific isl… mia                 79     5
+    ##  7          2016 female asian and pacific isl… charlotte           59     6
+    ##  8          2016 female asian and pacific isl… sarah               57     7
+    ##  9          2016 female asian and pacific isl… isabella            56     8
+    ## 10          2016 female asian and pacific isl… hannah              56     8
     ## # … with 12,171 more rows
 
 \*Create a table of the popularity of the name Olivia
@@ -3678,28 +3651,27 @@ popular_baby
 ``` r
 #Create data table with name Olivia as female baby name over time
 female_name = 
-  select(popular_baby, year_of_birth:rank) %>%
-  filter(gender == "FEMALE", childs_first_name == "olivia") %>%
-  arrange(year_of_birth, rank)
+  filter(popular_baby, childs_first_name == "olivia") %>%
+  select(-gender, -count, -childs_first_name) %>%
+  pivot_wider(names_from = "year_of_birth",
+              values_from = "rank")
+```
 
+    ## Adding missing grouping variables: `childs_first_name`, `gender`
+
+``` r
 female_name
 ```
 
-    ## # A tibble: 24 x 6
-    ## # Groups:   childs_first_name, rank, gender [11]
-    ##    year_of_birth gender ethnicity              childs_first_na… count  rank
-    ##            <dbl> <chr>  <chr>                  <chr>            <dbl> <dbl>
-    ##  1          2011 FEMALE white                  olivia             213     2
-    ##  2          2011 FEMALE asian and pacific isl… olivia              89     4
-    ##  3          2011 FEMALE black                  olivia              52    10
-    ##  4          2011 FEMALE hispanic               olivia              86    18
-    ##  5          2012 FEMALE asian and pacific isl… olivia             132     3
-    ##  6          2012 FEMALE white                  olivia             198     4
-    ##  7          2012 FEMALE black                  olivia              58     8
-    ##  8          2012 FEMALE hispanic               olivia              77    22
-    ##  9          2013 FEMALE white                  olivia             233     1
-    ## 10          2013 FEMALE asian and pacific isl… olivia             109     3
-    ## # … with 14 more rows
+    ## # A tibble: 4 x 9
+    ## # Groups:   childs_first_name, gender [1]
+    ##   childs_first_na… gender ethnicity `2016` `2015` `2014` `2013` `2012`
+    ##   <chr>            <chr>  <chr>      <dbl>  <dbl>  <dbl>  <dbl>  <dbl>
+    ## 1 olivia           female asian an…      1      1      1      3      3
+    ## 2 olivia           female black          8      4      8      6      8
+    ## 3 olivia           female hispanic      13     16     16     22     22
+    ## 4 olivia           female white          1      1      1      1      4
+    ## # … with 1 more variable: `2011` <dbl>
 
   - Create a table of the most popular male baby names
 
@@ -3707,26 +3679,26 @@ female_name
 
 ``` r
 male_name = 
-  arrange(popular_baby, year_of_birth, ethnicity, childs_first_name) %>%
-  filter(gender == "MALE", rank == 1)
+  filter(popular_baby, gender == "male", rank == 1) %>%
+  select(-gender, -count, -rank) %>%
+  pivot_wider(names_from = "year_of_birth",
+              values_from = "childs_first_name")
+```
+
+    ## Adding missing grouping variables: `rank`, `gender`
+
+``` r
 male_name
 ```
 
-    ## # A tibble: 24 x 6
-    ## # Groups:   childs_first_name, rank, gender [8]
-    ##    year_of_birth gender ethnicity              childs_first_na… count  rank
-    ##            <dbl> <chr>  <chr>                  <chr>            <dbl> <dbl>
-    ##  1          2011 MALE   asian and pacific isl… ethan              177     1
-    ##  2          2011 MALE   black                  jayden             184     1
-    ##  3          2011 MALE   hispanic               jayden             426     1
-    ##  4          2011 MALE   white                  michael            292     1
-    ##  5          2012 MALE   asian and pacific isl… ryan               197     1
-    ##  6          2012 MALE   black                  jayden             171     1
-    ##  7          2012 MALE   hispanic               jayden             364     1
-    ##  8          2012 MALE   white                  joseph             300     1
-    ##  9          2013 MALE   asian and pacific isl… jayden             220     1
-    ## 10          2013 MALE   black                  ethan              146     1
-    ## # … with 14 more rows
+    ## # A tibble: 4 x 9
+    ## # Groups:   rank, gender [1]
+    ##    rank gender ethnicity          `2016` `2015` `2014` `2013` `2012` `2011`
+    ##   <dbl> <chr>  <chr>              <chr>  <chr>  <chr>  <chr>  <chr>  <chr> 
+    ## 1     1 male   asian and pacific… ethan  jayden jayden jayden ryan   ethan 
+    ## 2     1 male   black              noah   noah   ethan  ethan  jayden jayden
+    ## 3     1 male   hispanic           liam   liam   liam   jayden jayden jayden
+    ## 4     1 male   white              joseph david  joseph david  joseph micha…
 
   - Create a ggplot of male, white, non-Hispanic children in
 2016
@@ -3742,21 +3714,10 @@ white_male =
 white_male
 ```
 
-    ## # A tibble: 364 x 6
-    ## # Groups:   childs_first_name, rank, gender [364]
-    ##    year_of_birth gender ethnicity childs_first_name  rank count
-    ##            <dbl> <chr>  <chr>     <chr>             <dbl> <dbl>
-    ##  1          2016 MALE   white     joseph                1   261
-    ##  2          2016 MALE   white     michael               2   260
-    ##  3          2016 MALE   white     david                 3   255
-    ##  4          2016 MALE   white     moshe                 4   239
-    ##  5          2016 MALE   white     jacob                 5   236
-    ##  6          2016 MALE   white     james                 6   231
-    ##  7          2016 MALE   white     benjamin              7   219
-    ##  8          2016 MALE   white     alexander             8   211
-    ##  9          2016 MALE   white     daniel                9   196
-    ## 10          2016 MALE   white     henry                 9   196
-    ## # … with 354 more rows
+    ## # A tibble: 0 x 6
+    ## # Groups:   childs_first_name, rank, gender [0]
+    ## # … with 6 variables: year_of_birth <dbl>, gender <chr>, ethnicity <chr>,
+    ## #   childs_first_name <chr>, rank <dbl>, count <dbl>
 
 ``` r
 #Using this dataset white_male we plotted x as the rank and y as the count for 2016 white, non-Hispanic babies of count against rank

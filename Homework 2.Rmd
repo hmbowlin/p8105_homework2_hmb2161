@@ -79,7 +79,7 @@ The data in the mrtrashwheel_data set has `r nrow(mrtrashwheel_data)` number of 
 
 # Problem 2
 *Clean data in pols-month.csv
-```{r}
+```{r, echo = FALSE}
 #Import in pols_month data
 pols_month_data =
   read_csv(file = "./data_hw2/fivethirtyeight_datasets/pols-month.csv") %>%
@@ -170,6 +170,7 @@ popular_baby =
   mutate(ethnicity = recode(ethnicity, 'ASIAN AND PACIFIC ISLANDER' = "asian and pacific islander",'BLACK NON HISPANIC' = "black", 'HISPANIC' = "hispanic", 'WHITE NON HISPANIC' = "white", 'ASIAN AND PACI' = "asian and pacific islander", 'BLACK NON HISP' = "black", 'WHITE NON HISP' = "white")) %>%
 #Mutate the childs_first_name values to lowercase as some are upper and some are lower
   mutate(childs_first_name = str_to_lower(childs_first_name)) %>%
+  mutate(gender = str_to_lower(gender)) %>%
 #Group the data by first name, rank, and gender
   group_by(childs_first_name, rank, gender) %>%
 #Ensure the rows are distinct
@@ -181,17 +182,20 @@ popular_baby
 ```{r}
 #Create data table with name Olivia as female baby name over time
 female_name = 
-  select(popular_baby, year_of_birth:rank) %>%
-  filter(gender == "FEMALE", childs_first_name == "olivia") %>%
-  arrange(year_of_birth, rank)
+  filter(popular_baby, childs_first_name == "olivia") %>%
+  select(-gender, -count, -childs_first_name) %>%
+  pivot_wider(names_from = "year_of_birth",
+              values_from = "rank")
 
 female_name
 ```
 * Create a table of the most popular male baby names
 ```{r}
 male_name = 
-  arrange(popular_baby, year_of_birth, ethnicity, childs_first_name) %>%
-  filter(gender == "MALE", rank == 1)
+  filter(popular_baby, gender == "male", rank == 1) %>%
+  select(-gender, -count, -rank) %>%
+  pivot_wider(names_from = "year_of_birth",
+              values_from = "childs_first_name")
 male_name
 ```
 * Create a ggplot of male, white, non-Hispanic children in 2016
