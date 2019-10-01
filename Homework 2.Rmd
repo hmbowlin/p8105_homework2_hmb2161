@@ -10,7 +10,8 @@ output: github_document
 library(tidyverse)
 
 # Import in the Mr. Trash Wheel sheet from mrtrashwheel dataset
-# First row is skipped as it contains company logo, blank celsl are dropped, and the names are cleaned up
+# First row is skipped as it contains company logo, blank cells are
+# dropped, and the names are cleaned up
 mrtrashwheel_data = 
   readxl::read_excel(
     "./data_hw2/trash_wheel_update.xlsx", 
@@ -35,7 +36,8 @@ mrtrashwheel_data
 
 * Precipitation Sheets
 ```{r}
-#Import precipitation 2017 data from the 3rd sheet, mutate year to 2017, clean up the names, and drop any rows with blank cells
+#Import precipitation 2017 data from the 3rd sheet, mutate year to 2017, 
+# clean up the names, and drop any rows with blank cells
 precipitation_2017 = 
   readxl::read_excel(
     "./data_hw2/trash_wheel_update.xlsx", 
@@ -50,7 +52,8 @@ precipitation_2017 =
 
 precipitation_2017
 
-#Import precipitation data from 2018 from the 4th sheet, mutate year to 2018, clean up the names, and drop any blank cells
+#Import precipitation data from 2018 from the 4th sheet, 
+# mutate year to 2018, clean up the names, and drop any blank cells
 precipitation_2018 = 
   readxl::read_excel(
     "./data_hw2/trash_wheel_update.xlsx", 
@@ -158,7 +161,7 @@ These data show various election results from months and years along with certai
 
 # Problem 3
 ```{r}
-#Import in popular aby names dataset
+#Import in popular baby names dataset
 popular_baby = 
   read_csv(file = "./data_hw2/Popular_Baby_Names.csv") %>%
 #Clean names
@@ -178,8 +181,10 @@ popular_baby
 ```{r}
 #Create data table with name Olivia as female baby name over time
 female_name = 
-  arrange(popular_baby, year_of_birth, ethnicity, childs_first_name) %>%
-  filter(childs_first_name == "olivia") 
+  select(popular_baby, year_of_birth:rank) %>%
+  filter(gender == "FEMALE", childs_first_name == "olivia") %>%
+  arrange(year_of_birth, rank)
+
 female_name
 ```
 * Create a table of the most popular male baby names
@@ -203,4 +208,6 @@ ggplot(white_male, aes(x = rank, y = count)) +
   geom_point(aes(color = count))
 
 ```
+
+
 

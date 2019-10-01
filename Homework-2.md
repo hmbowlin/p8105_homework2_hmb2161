@@ -12,20 +12,21 @@ Homework 2
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+    ## ── Attaching packages ─────────────────────────────────────── tidyverse 1.2.1 ──
 
     ## ✔ ggplot2 3.2.1     ✔ purrr   0.3.2
     ## ✔ tibble  2.1.3     ✔ dplyr   0.8.3
     ## ✔ tidyr   1.0.0     ✔ stringr 1.4.0
     ## ✔ readr   1.3.1     ✔ forcats 0.4.0
 
-    ## ── Conflicts ───────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
 
 ``` r
 # Import in the Mr. Trash Wheel sheet from mrtrashwheel dataset
-# First row is skipped as it contains company logo, blank celsl are dropped, and the names are cleaned up
+# First row is skipped as it contains company logo, blank cells are
+# dropped, and the names are cleaned up
 mrtrashwheel_data = 
   readxl::read_excel(
     "./data_hw2/trash_wheel_update.xlsx", 
@@ -70,7 +71,8 @@ Sheets
 <!-- end list -->
 
 ``` r
-#Import precipitation 2017 data from the 3rd sheet, mutate year to 2017, clean up the names, and drop any rows with blank cells
+#Import precipitation 2017 data from the 3rd sheet, mutate year to 2017, 
+# clean up the names, and drop any rows with blank cells
 precipitation_2017 = 
   readxl::read_excel(
     "./data_hw2/trash_wheel_update.xlsx", 
@@ -103,7 +105,8 @@ precipitation_2017
     ## 12 December   0.94 2017
 
 ``` r
-#Import precipitation data from 2018 from the 4th sheet, mutate year to 2018, clean up the names, and drop any blank cells
+#Import precipitation data from 2018 from the 4th sheet, 
+# mutate year to 2018, clean up the names, and drop any blank cells
 precipitation_2018 = 
   readxl::read_excel(
     "./data_hw2/trash_wheel_update.xlsx", 
@@ -3625,7 +3628,7 @@ fivethirtyeight\_data has 817 rows and 11 columns.
 # Problem 3
 
 ``` r
-#Import in popular aby names dataset
+#Import in popular baby names dataset
 popular_baby = 
   read_csv(file = "./data_hw2/Popular_Baby_Names.csv") %>%
 #Clean names
@@ -3675,8 +3678,10 @@ popular_baby
 ``` r
 #Create data table with name Olivia as female baby name over time
 female_name = 
-  arrange(popular_baby, year_of_birth, ethnicity, childs_first_name) %>%
-  filter(childs_first_name == "olivia") 
+  select(popular_baby, year_of_birth:rank) %>%
+  filter(gender == "FEMALE", childs_first_name == "olivia") %>%
+  arrange(year_of_birth, rank)
+
 female_name
 ```
 
@@ -3684,16 +3689,16 @@ female_name
     ## # Groups:   childs_first_name, rank, gender [11]
     ##    year_of_birth gender ethnicity              childs_first_na… count  rank
     ##            <dbl> <chr>  <chr>                  <chr>            <dbl> <dbl>
-    ##  1          2011 FEMALE asian and pacific isl… olivia              89     4
-    ##  2          2011 FEMALE black                  olivia              52    10
-    ##  3          2011 FEMALE hispanic               olivia              86    18
-    ##  4          2011 FEMALE white                  olivia             213     2
+    ##  1          2011 FEMALE white                  olivia             213     2
+    ##  2          2011 FEMALE asian and pacific isl… olivia              89     4
+    ##  3          2011 FEMALE black                  olivia              52    10
+    ##  4          2011 FEMALE hispanic               olivia              86    18
     ##  5          2012 FEMALE asian and pacific isl… olivia             132     3
-    ##  6          2012 FEMALE black                  olivia              58     8
-    ##  7          2012 FEMALE hispanic               olivia              77    22
-    ##  8          2012 FEMALE white                  olivia             198     4
-    ##  9          2013 FEMALE asian and pacific isl… olivia             109     3
-    ## 10          2013 FEMALE black                  olivia              64     6
+    ##  6          2012 FEMALE white                  olivia             198     4
+    ##  7          2012 FEMALE black                  olivia              58     8
+    ##  8          2012 FEMALE hispanic               olivia              77    22
+    ##  9          2013 FEMALE white                  olivia             233     1
+    ## 10          2013 FEMALE asian and pacific isl… olivia             109     3
     ## # … with 14 more rows
 
   - Create a table of the most popular male baby names
