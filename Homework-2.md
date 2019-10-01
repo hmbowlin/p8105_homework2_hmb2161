@@ -3710,19 +3710,30 @@ male_name
 # All of these babies are non-Hispanic per the definition of the dataset and how I cleaned it earlier
 white_male = 
   select(popular_baby, year_of_birth, gender, ethnicity, childs_first_name, rank, count) %>%
-  filter(ethnicity == "white", gender == "MALE", year_of_birth == 2016)
+  filter(ethnicity == "white", gender == "male", year_of_birth == 2016)
 white_male
 ```
 
-    ## # A tibble: 0 x 6
-    ## # Groups:   childs_first_name, rank, gender [0]
-    ## # … with 6 variables: year_of_birth <dbl>, gender <chr>, ethnicity <chr>,
-    ## #   childs_first_name <chr>, rank <dbl>, count <dbl>
+    ## # A tibble: 364 x 6
+    ## # Groups:   childs_first_name, rank, gender [364]
+    ##    year_of_birth gender ethnicity childs_first_name  rank count
+    ##            <dbl> <chr>  <chr>     <chr>             <dbl> <dbl>
+    ##  1          2016 male   white     joseph                1   261
+    ##  2          2016 male   white     michael               2   260
+    ##  3          2016 male   white     david                 3   255
+    ##  4          2016 male   white     moshe                 4   239
+    ##  5          2016 male   white     jacob                 5   236
+    ##  6          2016 male   white     james                 6   231
+    ##  7          2016 male   white     benjamin              7   219
+    ##  8          2016 male   white     alexander             8   211
+    ##  9          2016 male   white     daniel                9   196
+    ## 10          2016 male   white     henry                 9   196
+    ## # … with 354 more rows
 
 ``` r
 #Using this dataset white_male we plotted x as the rank and y as the count for 2016 white, non-Hispanic babies of count against rank
-ggplot(white_male, aes(x = rank, y = count)) +
-  geom_point(aes(color = count))
+ggplot(white_male, aes(x = rank, y = count, color = count)) +
+  geom_point()
 ```
 
 ![](Homework-2_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
