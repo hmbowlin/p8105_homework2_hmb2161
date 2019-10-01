@@ -179,10 +179,7 @@ popular_baby
 #Create data table with name Olivia as female baby name over time
 female_name = 
   arrange(popular_baby, year_of_birth, ethnicity, childs_first_name) %>%
-  filter(childs_first_name == "olivia") %>%
-  pivot_wider(ethnicity,
-              names_from = "rank",
-              values_from = "ethnicity")
+  filter(childs_first_name == "olivia") 
 female_name
 ```
 * Create a table of the most popular male baby names
@@ -194,6 +191,16 @@ male_name
 ```
 * Create a ggplot of male, white, non-Hispanic children in 2016
 ```{r}
+# selected the popular baby dataset and filtered for white ethnicity, male gender, and year of birth 2016
+# All of these babies are non-Hispanic per the definition of the dataset and how I cleaned it earlier
+white_male = 
+  select(popular_baby, year_of_birth, gender, ethnicity, childs_first_name, rank, count) %>%
+  filter(ethnicity == "white", gender == "MALE", year_of_birth == 2016)
+white_male
+
+#Using this dataset white_male we plotted x as the rank and y as the count for 2016 white, non-Hispanic babies of count against rank
+ggplot(white_male, aes(x = rank, y = count)) +
+  geom_point(aes(color = count))
 
 ```
 

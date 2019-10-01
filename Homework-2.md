@@ -12,14 +12,14 @@ Homework 2
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ─────────────────────────────────────── tidyverse 1.2.1 ──
+    ## ── Attaching packages ────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 
     ## ✔ ggplot2 3.2.1     ✔ purrr   0.3.2
     ## ✔ tibble  2.1.3     ✔ dplyr   0.8.3
     ## ✔ tidyr   1.0.0     ✔ stringr 1.4.0
     ## ✔ readr   1.3.1     ✔ forcats 0.4.0
 
-    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ───────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
 
@@ -3676,25 +3676,25 @@ popular_baby
 #Create data table with name Olivia as female baby name over time
 female_name = 
   arrange(popular_baby, year_of_birth, ethnicity, childs_first_name) %>%
-  filter(childs_first_name == "olivia") %>%
-  pivot_wider(ethnicity,
-              names_from = "rank",
-              values_from = "ethnicity")
-```
-
-    ## Warning: Values in `ethnicity` are not uniquely identified; output will contain list-cols.
-    ## * Use `values_fn = list(ethnicity = list)` to suppress this warning.
-    ## * Use `values_fn = list(ethnicity = length)` to identify where the duplicates arise
-    ## * Use `values_fn = list(ethnicity = summary_fun)` to summarise duplicates
-
-``` r
+  filter(childs_first_name == "olivia") 
 female_name
 ```
 
-    ## # A tibble: 1 x 11
-    ##      `4`   `10`   `18`    `2`    `3`    `8`   `22`    `6`   `1`  `16`  `13`
-    ##   <list> <list> <list> <list> <list> <list> <list> <list> <lis> <lis> <lis>
-    ## 1    [3]    [1]    [1]    [1]    [2]    [3]    [2]    [1]   [7]   [2]   [1]
+    ## # A tibble: 24 x 6
+    ## # Groups:   childs_first_name, rank, gender [11]
+    ##    year_of_birth gender ethnicity              childs_first_na… count  rank
+    ##            <dbl> <chr>  <chr>                  <chr>            <dbl> <dbl>
+    ##  1          2011 FEMALE asian and pacific isl… olivia              89     4
+    ##  2          2011 FEMALE black                  olivia              52    10
+    ##  3          2011 FEMALE hispanic               olivia              86    18
+    ##  4          2011 FEMALE white                  olivia             213     2
+    ##  5          2012 FEMALE asian and pacific isl… olivia             132     3
+    ##  6          2012 FEMALE black                  olivia              58     8
+    ##  7          2012 FEMALE hispanic               olivia              77    22
+    ##  8          2012 FEMALE white                  olivia             198     4
+    ##  9          2013 FEMALE asian and pacific isl… olivia             109     3
+    ## 10          2013 FEMALE black                  olivia              64     6
+    ## # … with 14 more rows
 
   - Create a table of the most popular male baby names
 
@@ -3723,4 +3723,40 @@ male_name
     ## 10          2013 MALE   black                  ethan              146     1
     ## # … with 14 more rows
 
-  - Create a ggplot of male, white, non-Hispanic children in 2016
+  - Create a ggplot of male, white, non-Hispanic children in
+2016
+
+<!-- end list -->
+
+``` r
+# selected the popular baby dataset and filtered for white ethnicity, male gender, and year of birth 2016
+# All of these babies are non-Hispanic per the definition of the dataset and how I cleaned it earlier
+white_male = 
+  select(popular_baby, year_of_birth, gender, ethnicity, childs_first_name, rank, count) %>%
+  filter(ethnicity == "white", gender == "MALE", year_of_birth == 2016)
+white_male
+```
+
+    ## # A tibble: 364 x 6
+    ## # Groups:   childs_first_name, rank, gender [364]
+    ##    year_of_birth gender ethnicity childs_first_name  rank count
+    ##            <dbl> <chr>  <chr>     <chr>             <dbl> <dbl>
+    ##  1          2016 MALE   white     joseph                1   261
+    ##  2          2016 MALE   white     michael               2   260
+    ##  3          2016 MALE   white     david                 3   255
+    ##  4          2016 MALE   white     moshe                 4   239
+    ##  5          2016 MALE   white     jacob                 5   236
+    ##  6          2016 MALE   white     james                 6   231
+    ##  7          2016 MALE   white     benjamin              7   219
+    ##  8          2016 MALE   white     alexander             8   211
+    ##  9          2016 MALE   white     daniel                9   196
+    ## 10          2016 MALE   white     henry                 9   196
+    ## # … with 354 more rows
+
+``` r
+#Using this dataset white_male we plotted x as the rank and y as the count for 2016 white, non-Hispanic babies of count against rank
+ggplot(white_male, aes(x = rank, y = count)) +
+  geom_point(aes(color = count))
+```
+
+![](Homework-2_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
