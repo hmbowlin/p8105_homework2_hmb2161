@@ -71,7 +71,7 @@ precipitation_2018
 #Combine the two datasets into one precipitation_data set, bind rows, clean the names, mutate the month to month name
 precipitation_data = 
   bind_rows(precipitation_2017, precipitation_2018) %>%
-  janitor::clean_names() 
+  janitor::clean_names()
 
 precipitation_data
 ```
@@ -120,10 +120,12 @@ snp_data =
 #Arrange the data with year and month as leading columns
   arrange(year, month) %>%
 #Select everything, but the day column
-  select(year, month, close, -day)
+  select(year, month, close, -day) 
 
 snp_data
 ```
+
+
 * Clean unemployment data
 ```{r}
 #Import unemployment dataset
@@ -137,7 +139,7 @@ unemployment_data =
 #Mutate the month to be month name
    mutate(month = month.name[match(month,month.abb)]) %>%
 #Clean names
-  janitor::clean_names()
+  janitor::clean_names() 
  
  unemployment_data
 ```
@@ -149,7 +151,7 @@ fivethirtyeight_first_data =
 #Ensure the names stay clean
   janitor::clean_names()
 
-#Join the dataset above with unemployment data by a concatenated primary key year and month
+#Join the dataset above with unemployment data by a concatenated primary key year and month and make the resulting dataset look nice
 fivethirtyeight_data = 
   left_join(fivethirtyeight_first_data, unemployment_data, by = c("year", "month")) %>%
   janitor::clean_names()
@@ -174,10 +176,12 @@ popular_baby =
 #Group the data by first name, rank, and gender
   group_by(childs_first_name, rank, gender) %>%
 #Ensure the rows are distinct
-  distinct()
+  distinct() 
   
 popular_baby
 ```
+
+
 *Create a table of the popularity of the name Olivia
 ```{r}
 #Create data table with name Olivia as female baby name over time
@@ -185,20 +189,26 @@ female_name =
   filter(popular_baby, childs_first_name == "olivia") %>%
   select(-gender, -count, -childs_first_name) %>%
   pivot_wider(names_from = "year_of_birth",
-              values_from = "rank")
+              values_from = "rank") %>%
+  knitr::kable()
 
 female_name
 ```
+
+
 * Create a table of the most popular male baby names
 ```{r}
 male_name = 
   filter(popular_baby, gender == "male", rank == 1) %>%
   select(-gender, -count, -rank) %>%
   pivot_wider(names_from = "year_of_birth",
-              values_from = "childs_first_name")
+              values_from = "childs_first_name") %>%
+  knitr::kable()
 male_name
 ```
-* Create a ggplot of male, white, non-Hispanic children in 2016
+
+
+* Create a table of male, white, non-Hispanic children in 2016
 ```{r}
 # selected the popular baby dataset and filtered for white ethnicity, male gender, and year of birth 2016
 # All of these babies are non-Hispanic per the definition of the dataset and how I cleaned it earlier
@@ -206,12 +216,14 @@ white_male =
   select(popular_baby, year_of_birth, gender, ethnicity, childs_first_name, rank, count) %>%
   filter(ethnicity == "white", gender == "male", year_of_birth == 2016)
 white_male
+```
 
+
+* Creating ggplot for white male
+```{r}
 #Using this dataset white_male we plotted x as the rank and y as the count for 2016 white, non-Hispanic babies of count against rank
 ggplot(white_male, aes(x = rank, y = count, color = count)) +
   geom_point()
 
 ```
-
-
 

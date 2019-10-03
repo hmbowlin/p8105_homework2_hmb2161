@@ -142,7 +142,7 @@ precipitation_2018
 #Combine the two datasets into one precipitation_data set, bind rows, clean the names, mutate the month to month name
 precipitation_data = 
   bind_rows(precipitation_2017, precipitation_2018) %>%
-  janitor::clean_names() 
+  janitor::clean_names()
 
 precipitation_data
 ```
@@ -1840,7 +1840,7 @@ snp_data =
 #Arrange the data with year and month as leading columns
   arrange(year, month) %>%
 #Select everything, but the day column
-  select(year, month, close, -day)
+  select(year, month, close, -day) 
 ```
 
     ## Parsed with column specification:
@@ -1884,7 +1884,7 @@ unemployment_data =
 #Mutate the month to be month name
    mutate(month = month.name[match(month,month.abb)]) %>%
 #Clean names
-  janitor::clean_names()
+  janitor::clean_names() 
 ```
 
     ## Parsed with column specification:
@@ -1935,7 +1935,7 @@ fivethirtyeight_first_data =
 #Ensure the names stay clean
   janitor::clean_names()
 
-#Join the dataset above with unemployment data by a concatenated primary key year and month
+#Join the dataset above with unemployment data by a concatenated primary key year and month and make the resulting dataset look nice
 fivethirtyeight_data = 
   left_join(fivethirtyeight_first_data, unemployment_data, by = c("year", "month")) %>%
   janitor::clean_names()
@@ -3613,7 +3613,7 @@ popular_baby =
 #Group the data by first name, rank, and gender
   group_by(childs_first_name, rank, gender) %>%
 #Ensure the rows are distinct
-  distinct()
+  distinct() 
 ```
 
     ## Parsed with column specification:
@@ -3654,7 +3654,8 @@ female_name =
   filter(popular_baby, childs_first_name == "olivia") %>%
   select(-gender, -count, -childs_first_name) %>%
   pivot_wider(names_from = "year_of_birth",
-              values_from = "rank")
+              values_from = "rank") %>%
+  knitr::kable()
 ```
 
     ## Adding missing grouping variables: `childs_first_name`, `gender`
@@ -3663,15 +3664,12 @@ female_name =
 female_name
 ```
 
-    ## # A tibble: 4 x 9
-    ## # Groups:   childs_first_name, gender [1]
-    ##   childs_first_na… gender ethnicity `2016` `2015` `2014` `2013` `2012`
-    ##   <chr>            <chr>  <chr>      <dbl>  <dbl>  <dbl>  <dbl>  <dbl>
-    ## 1 olivia           female asian an…      1      1      1      3      3
-    ## 2 olivia           female black          8      4      8      6      8
-    ## 3 olivia           female hispanic      13     16     16     22     22
-    ## 4 olivia           female white          1      1      1      1      4
-    ## # … with 1 more variable: `2011` <dbl>
+| childs\_first\_name | gender | ethnicity                  | 2016 | 2015 | 2014 | 2013 | 2012 | 2011 |
+| :------------------ | :----- | :------------------------- | ---: | ---: | ---: | ---: | ---: | ---: |
+| olivia              | female | asian and pacific islander |    1 |    1 |    1 |    3 |    3 |    4 |
+| olivia              | female | black                      |    8 |    4 |    8 |    6 |    8 |   10 |
+| olivia              | female | hispanic                   |   13 |   16 |   16 |   22 |   22 |   18 |
+| olivia              | female | white                      |    1 |    1 |    1 |    1 |    4 |    2 |
 
   - Create a table of the most popular male baby names
 
@@ -3682,7 +3680,8 @@ male_name =
   filter(popular_baby, gender == "male", rank == 1) %>%
   select(-gender, -count, -rank) %>%
   pivot_wider(names_from = "year_of_birth",
-              values_from = "childs_first_name")
+              values_from = "childs_first_name") %>%
+  knitr::kable()
 ```
 
     ## Adding missing grouping variables: `rank`, `gender`
@@ -3691,16 +3690,14 @@ male_name =
 male_name
 ```
 
-    ## # A tibble: 4 x 9
-    ## # Groups:   rank, gender [1]
-    ##    rank gender ethnicity          `2016` `2015` `2014` `2013` `2012` `2011`
-    ##   <dbl> <chr>  <chr>              <chr>  <chr>  <chr>  <chr>  <chr>  <chr> 
-    ## 1     1 male   asian and pacific… ethan  jayden jayden jayden ryan   ethan 
-    ## 2     1 male   black              noah   noah   ethan  ethan  jayden jayden
-    ## 3     1 male   hispanic           liam   liam   liam   jayden jayden jayden
-    ## 4     1 male   white              joseph david  joseph david  joseph micha…
+| rank | gender | ethnicity                  | 2016   | 2015   | 2014   | 2013   | 2012   | 2011    |
+| ---: | :----- | :------------------------- | :----- | :----- | :----- | :----- | :----- | :------ |
+|    1 | male   | asian and pacific islander | ethan  | jayden | jayden | jayden | ryan   | ethan   |
+|    1 | male   | black                      | noah   | noah   | ethan  | ethan  | jayden | jayden  |
+|    1 | male   | hispanic                   | liam   | liam   | liam   | jayden | jayden | jayden  |
+|    1 | male   | white                      | joseph | david  | joseph | david  | joseph | michael |
 
-  - Create a ggplot of male, white, non-Hispanic children in
+  - Create a table of male, white, non-Hispanic children in
 2016
 
 <!-- end list -->
@@ -3730,10 +3727,15 @@ white_male
     ## 10          2016 male   white     henry                 9   196
     ## # … with 354 more rows
 
+  - Creating ggplot for white
+male
+
+<!-- end list -->
+
 ``` r
 #Using this dataset white_male we plotted x as the rank and y as the count for 2016 white, non-Hispanic babies of count against rank
 ggplot(white_male, aes(x = rank, y = count, color = count)) +
   geom_point()
 ```
 
-![](Homework-2_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](Homework-2_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
